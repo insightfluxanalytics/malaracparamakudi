@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Malar A/C Portal</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+  
+  <style>
+    /* Specific styles for Admin Portal to keep it isolated and responsive */
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    
+    .admin-body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Admin Login Screen */
+    .login-container {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 60%, #2563eb 100%);
+    }
+
+    .login-card {
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      width: 100%;
+      max-width: 420px;
+      padding: 3rem 2.25rem;
+      text-align: center;
+    }
+
+    .login-logo {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: var(--radius-full);
+      border: 3px solid var(--primary-light);
+      margin-bottom: 1.25rem;
+      object-fit: cover;
+    }
+
+    .login-title {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-sub {
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Mobile responsiveness adjustments for the login card */
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 1rem;
+      }
+      .login-card {
+        padding: 2rem 1.5rem;
+        border-radius: var(--radius-md);
+      }
+      .login-logo {
+        width: 3.75rem;
+        height: 3.75rem;
+        margin-bottom: 1rem;
+      }
+      .login-title {
+        font-size: 1.45rem;
+      }
+      .login-sub {
+        font-size: 0.8rem;
+        margin-bottom: 1.5rem;
+      }
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      text-align: left;
+    }
+
+    .error-msg {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* Admin Panel Area */
+    .admin-header {
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .admin-logo-img {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: var(--radius-full);
+      object-fit: cover;
+    }
+
+    .admin-brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-user {
+      font-size: 0.85rem;
+      font-weight: 600;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-full);
+    }
+
+    .btn-logout {
+      background-color: #ef4444;
+      color: #ffffff;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      transition: background-color 0.2s;
+    }
+
+    .btn-logout:hover {
+      background-color: #dc2626;
+    }
+
+    .admin-content {
+      flex-grow: 1;
+      padding: 2.5rem 1.5rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (min-width: 576px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 992px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .stat-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .stat-icon-box {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon-box.total { background-color: #e0f2fe; color: #0284c7; }
+    .stat-icon-box.pending { background-color: #fef3c7; color: #d97706; }
+    .stat-icon-box.completed { background-color: #dcfce7; color: #16a34a; }
+    .stat-icon-box.sales { background-color: #f3e8ff; color: #9333ea; }
+
+    .stat-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    /* Analytics Dashboard & Charts Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (min-width: 992px) {
+      .dashboard-grid {
+        grid-template-columns: 1.2fr 0.8fr;
+      }
+    }
+
+    .dashboard-panel {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+
+    .panel-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Analytics SVG Charts */
+    .chart-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .bar-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .bar-bg {
+      height: 0.75rem;
+      background-color: var(--muted);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      border-radius: var(--radius-full);
+      transition: width 0.6s ease;
+      width: 0%;
+    }
+
+    /* Table & Bookings Viewport */
+    .bookings-panel {
+      background-color: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 1.75rem;
+    }
+
+    .table-actions-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .table-actions-row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .search-filter-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    @media (min-width: 480px) {
+      .search-filter-box {
+        flex-direction: row;
+        width: auto;
+      }
+    }
+
+    .search-input {
+      padding: 0.5rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      outline: none;
+      min-width: 220px;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+    }
+
+    .filter-select {
+      padding: 0.5rem 2rem 0.5rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      background-color: #ffffff;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-export {
+      background-color: var(--muted);
+      border: 1px solid var(--border);
+      color: var(--card-foreground);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover {
+      background-color: var(--border);
+    }
+
+    /* Scrollable Data Table styles */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      margin-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--muted);
+      color: var(--card-foreground);
+      font-weight: 700;
+      padding: 0.85rem 1rem;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    tr:hover td {
+      background-color: var(--muted);
+    }
+
+    /* Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-badge.pending { background-color: #fef3c7; color: #d97706; }
+    .status-badge.completed { background-color: #dcfce7; color: #16a34a; }
+
+    .service-type-badge {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .contact-cell {
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .address-cell {
+      min-width: 180px;
+      max-width: 300px;
+      font-size: 0.8rem;
+    }
+
+    /* Row action buttons */
+    .row-actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .btn-action {
+      padding: 0.35rem;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+
+    .btn-action.toggle { background-color: #dcfce7; color: #16a34a; }
+    .btn-action.toggle:hover { background-color: #bbf7d0; }
+    
+    .btn-action.whatsapp { background-color: #e6fffa; color: #0284c7; }
+    .btn-action.whatsapp:hover { background-color: #ccfbf1; }
+
+    .btn-action.delete { background-color: #fee2e2; color: #ef4444; }
+    .btn-action.delete:hover { background-color: #fca5a5; }
+
+    /* Empty state */
+    .empty-state {
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--muted-foreground);
+    }
+
+    .empty-state-icon {
+      width: 3rem;
+      height: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-state-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--card-foreground);
+      margin-bottom: 0.5rem;
+    }
+
+    /* ==================== MOBILE RESPONSIVENESS AND DENSE CHARTS ==================== */
+    @media (max-width: 768px) {
+      .admin-content {
+        padding: 1.25rem 0.75rem;
+      }
+
+      /* Stats Grid: Keep it balanced with 2 columns down to mobile */
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+      .stat-card {
+        padding: 0.85rem 0.75rem;
+        gap: 0.5rem;
+        border-radius: var(--radius-md);
+      }
+      .stat-icon-box {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: var(--radius-sm);
+        flex-shrink: 0;
+      }
+      .stat-icon-box svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+      .stat-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.02em;
+      }
+      .stat-value {
+        font-size: 1.25rem;
+      }
+
+      /* Dashboard Grid Gap */
+      .dashboard-grid {
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+      }
+      .dashboard-panel {
+        padding: 1rem;
+        border-radius: var(--radius-md);
+      }
+      .panel-header {
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+      }
+      .panel-title {
+        font-size: 1rem;
+      }
+
+      /* Shrink/compact the categories and preferred booking timing slot charts */
+      .chart-container {
+        gap: 0.55rem;
+        margin-top: 0.5rem;
+      }
+      .bar-row {
+        gap: 0.15rem;
+      }
+      .bar-label-row {
+        font-size: 0.75rem;
+      }
+      .bar-bg {
+        height: 0.45rem;
+      }
+
+      /* Bookings Panel & Table Controls */
+      .bookings-panel {
+        padding: 1rem;
+        border-radius: var(--radius-md);
+      }
+      .table-actions-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .search-filter-box {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+      }
+      .search-input {
+        width: 100%;
+        min-width: 0;
+      }
+      .filter-select {
+        width: 100%;
+      }
+      .btn-export {
+        width: 100%;
+        justify-content: center;
+        padding: 0.6rem;
+      }
+
+      /* Table to Stacked Card list Conversion */
+      .table-container {
+        border: none;
+        background: transparent;
+        margin-top: 0.5rem;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead {
+        display: none; /* Hide header row on mobile */
+      }
+      tbody tr {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      tbody tr:hover td {
+        background-color: transparent;
+      }
+      td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 0.6rem 0;
+        border-bottom: 1px dashed var(--border);
+        text-align: right;
+        font-size: 0.825rem;
+      }
+      td:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--muted-foreground);
+        text-align: left;
+        padding-right: 1rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Customize specific cell types for perfect alignment and wrapping on mobile */
+      td[data-label="Customer"] {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: left;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+      td[data-label="Customer"]::before {
+        margin-bottom: 0.35rem;
+      }
+      td[data-label="Customer"] strong {
+        font-size: 1.05rem !important;
+      }
+      
+      td[data-label="Address"], td[data-label="Message"] {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: left;
+      }
+      td[data-label="Address"]::before, td[data-label="Message"]::before {
+        margin-bottom: 0.25rem;
+      }
+      .address-cell {
+        max-width: 100% !important;
+        font-size: 0.85rem !important;
+        color: #334155;
+      }
+      td[data-label="Message"] div {
+        max-width: 100% !important;
+        font-size: 0.85rem !important;
+        color: #475569;
+      }
+      
+      td[data-label="Actions"] {
+        border-bottom: none;
+        padding-top: 0.75rem;
+        margin-top: 0.5rem;
+        align-items: center;
+      }
+      .row-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .row-actions .btn-action {
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-md);
+      }
+    }
+
+    @media (max-width: 576px) {
+      /* Header stacking styling */
+      .admin-header {
+        padding: 0.75rem 1rem;
+      }
+      .admin-header-container {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+        align-items: center;
+      }
+      .admin-brand {
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .admin-brand-title {
+        font-size: 1rem;
+        text-align: center;
+      }
+      .admin-actions {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      .admin-user {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+      }
+      .btn-logout {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <!-- ==================== ADMIN LOGIN SCREEN ==================== -->
+  <div id="loginScreen" class="login-container">
+    <div class="login-card">
+      <img src="assets/logo.jpg" alt="Malar A/C Portal" class="login-logo" />
+      <h2 class="login-title">Owner Portal</h2>
+      <p class="login-sub">Sign in to manage doorstep service bookings & view sales analytics</p>
+
+      <form id="loginForm" class="login-form">
+        <!-- Error notification box -->
+        <div id="loginError" class="error-msg hidden"></div>
+
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" class="form-input" placeholder="Enter username" required autocomplete="username" />
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Enter password" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit" style="margin-top:0.75rem;">
+          <i data-lucide="log-in" style="width:1.2rem; height:1.2rem;"></i>
+          <span>Log In</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN DASHBOARD PANEL ==================== -->
+  <div id="dashboardPanel" class="hidden">
+    <!-- Header -->
+    <header class="admin-header">
+      <div class="container admin-header-container">
+        <div class="admin-brand">
+          <img src="assets/logo.jpg" alt="Malar AC Logo" class="admin-logo-img" />
+          <h2 class="admin-brand-title">Malar A/C Owner Dashboard</h2>
+        </div>
+        
+        <div class="admin-actions">
+          <span class="admin-user">Hello, Rajkumar</span>
+          <button id="logoutBtn" class="btn-logout">
+            <i data-lucide="log-out" style="width:0.95rem; height:0.95rem; display:inline-block; vertical-align:middle; margin-right:0.25rem;"></i>
+            <span style="vertical-align:middle;">Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-content container">
+      <!-- 1. Stats Counter Cards -->
+      <section class="stats-grid">
+        <!-- Total -->
+        <div class="stat-card">
+          <div class="stat-icon-box total">
+            <i data-lucide="calendar"></i>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Total Bookings</span>
+            <span id="statTotal" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <!-- Pending -->
+        <div class="stat-card">
+          <div class="stat-icon-box pending">
+            <i data-lucide="clock"></i>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Pending Service</span>
+            <span id="statPending" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <!-- Completed -->
+        <div class="stat-card">
+          <div class="stat-icon-box completed">
+            <i data-lucide="check-circle-2"></i>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Completed Service</span>
+            <span id="statCompleted" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <!-- Sales (AC vs Fridge vs Washing Machine) -->
+        <div class="stat-card">
+          <div class="stat-icon-box sales">
+            <i data-lucide="bar-chart-3"></i>
+          </div>
+          <div class="stat-meta">
+            <span class="stat-label">Active Enquiries</span>
+            <span id="statActive" class="stat-value">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Analytics & Graphs -->
+      <section class="dashboard-grid">
+        <!-- Analytics: Bookings per service category -->
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <i data-lucide="pie-chart" style="width:1.2rem; height:1.2rem; color:var(--primary-dark);"></i>
+              <span>Bookings by Service Categories</span>
+            </h3>
+          </div>
+          <!-- Bar Graph list -->
+          <div id="chartCategories" class="chart-container">
+            <!-- Dynamic elements will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Timings Slot Load -->
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <i data-lucide="hourglass" style="width:1.2rem; height:1.2rem; color:var(--primary-dark);"></i>
+              <span>Preferred Booking Time Slots</span>
+            </h3>
+          </div>
+          <div id="chartTimeSlots" class="chart-container">
+            <!-- Dynamic elements loaded here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Scheduled Contacts List -->
+      <section class="bookings-panel">
+        <div class="panel-header" style="margin-bottom:1rem; border-bottom:none; padding-bottom:0;">
+          <h3 class="panel-title">
+            <i data-lucide="table" style="width:1.2rem; height:1.2rem; color:var(--primary-dark);"></i>
+            <span>Scheduled Doorstep Bookings</span>
+          </h3>
+        </div>
+
+        <!-- Table Filters & Search -->
+        <div class="table-actions-row">
+          <div class="search-filter-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search customer, phone or address..." />
+            
+            <select id="filterService" class="filter-select">
+              <option value="ALL">All Categories</option>
+              <option value="A/C Service">A/C Service</option>
+              <option value="A/C Sales & Installation">A/C Sales & Installation</option>
+              <option value="Fridge Service">Fridge Service</option>
+              <option value="Fridge Sales">Fridge Sales</option>
+              <option value="Washing Machine Service">Washing Machine Service</option>
+              <option value="Washing Machine Sales">Washing Machine Sales</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <select id="filterStatus" class="filter-select">
+              <option value="ALL">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+
+          <!-- CSV Export -->
+          <button id="btnExport" class="btn-export">
+            <i data-lucide="download" style="width:1rem; height:1rem;"></i>
+            <span>Export Bookings</span>
+          </button>
+        </div>
+
+        <!-- Bookings Data Table -->
+        <div class="table-container">
+          <table id="bookingsTable">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Category</th>
+                <th>Preferred Slot</th>
+                <th>Address</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bookingsTableBody">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Lucide Script -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Lucide Icons
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+
+      // Secure hashes of B. Rajakumar's credentials
+      // Username: 'Rajkumar' -> SHA-256
+      const CORRECT_USER_HASH = '77721653409aa0f4926eff43bc05e25ff3de5abcf899abba4d6982d6b92ca625';
+      // Password: 'Raj@123' -> SHA-256
+      const CORRECT_PASS_HASH = '23f6a0937ab55f3517a9eca1a73ba5a2a252037790701e54f0b0705609fab637';
+
+      // Elements
+      const loginScreen = document.getElementById('loginScreen');
+      const dashboardPanel = document.getElementById('dashboardPanel');
+      const loginForm = document.getElementById('loginForm');
+      const loginError = document.getElementById('loginError');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      const searchInput = document.getElementById('searchInput');
+      const filterService = document.getElementById('filterService');
+      const filterStatus = document.getElementById('filterStatus');
+      const bookingsTableBody = document.getElementById('bookingsTableBody');
+      const btnExport = document.getElementById('btnExport');
+
+      // Check Session Storage on Load
+      if (sessionStorage.getItem('admin_logged_in') === 'true') {
+        showDashboard();
+      }
+
+      // SHA-256 Crypto Hashing
+      async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      // Login handler
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.classList.add('hidden');
+
+        const userVal = document.getElementById('username').value.trim();
+        const passVal = document.getElementById('password').value.trim();
+
+        // Compute hashes
+        const userHash = await sha256(userVal);
+        const passHash = await sha256(passVal);
+
+        if (userHash === CORRECT_USER_HASH && passHash === CORRECT_PASS_HASH) {
+          sessionStorage.setItem('admin_logged_in', 'true');
+          showDashboard();
+        } else {
+          loginError.textContent = "Invalid username or password. Please try again.";
+          loginError.classList.remove('hidden');
+        }
+      });
+
+      // Logout handler
+      logoutBtn.addEventListener('click', () => {
+        sessionStorage.removeItem('admin_logged_in');
+        location.reload();
+      });
+
+      function showDashboard() {
+        loginScreen.classList.add('hidden');
+        dashboardPanel.classList.remove('hidden');
+        document.body.style.backgroundColor = '#f8fafc';
+        
+        loadBookings();
+      }
+
+      // Load & Render Data from LocalStorage with SecurityError tolerance
+      function loadBookings() {
+        let bookings = [];
+        try {
+          bookings = JSON.parse(localStorage.getItem('malar_bookings'));
+        } catch (err) {
+          console.error("Local storage access restricted by browser security:", err);
+        }
+
+        if (!bookings || bookings.length === 0) {
+          bookings = [
+            {
+              id: 'booking_mock_1',
+              customerName: 'Aravind Swamy',
+              phoneNumber: '9845123654',
+              email: 'aravind@gmail.com',
+              serviceType: 'A/C Service',
+              preferredDate: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
+              preferredTime: '11:00 AM - 1:00 PM',
+              address: 'No 12, Gandhi Street, Madurai',
+              message: 'AC is not cooling properly, needs gas refilling.',
+              status: 'Pending',
+              timestamp: new Date(Date.now() - 3600000).toISOString()
+            },
+            {
+              id: 'booking_mock_2',
+              customerName: 'Meena Kumari',
+              phoneNumber: '9443210987',
+              email: '',
+              serviceType: 'Fridge Service',
+              preferredDate: new Date(Date.now() + 172800000).toISOString().slice(0, 10),
+              preferredTime: '2:00 PM - 4:00 PM',
+              address: '56A, Anna Nagar, Trichy',
+              message: 'Double door fridge compressor making loud noise.',
+              status: 'Pending',
+              timestamp: new Date(Date.now() - 7200000).toISOString()
+            },
+            {
+              id: 'booking_mock_3',
+              customerName: 'Karthik Raja',
+              phoneNumber: '8608672282',
+              email: 'karthik@yahoo.com',
+              serviceType: 'Washing Machine Service',
+              preferredDate: new Date().toISOString().slice(0, 10),
+              preferredTime: '9:00 AM - 11:00 AM',
+              address: 'Flat 4B, Balaji Apartments, Madurai',
+              message: 'Top load drum is vibrating heavily during spin cycle.',
+              status: 'Completed',
+              timestamp: new Date(Date.now() - 86400000).toISOString()
+            }
+          ];
+          try {
+            localStorage.setItem('malar_bookings', JSON.stringify(bookings));
+          } catch (err) {
+            console.warn("Could not save fallback mock bookings to localStorage:", err);
+          }
+        }
+        
+        // Render Stats
+        updateStats(bookings);
+
+        // Render Analytics Charts
+        renderAnalytics(bookings);
+
+        // Filter and Render Bookings Table
+        renderBookingsTable(bookings);
+      }
+
+      function updateStats(bookings) {
+        const total = bookings.length;
+        const pending = bookings.filter(b => b.status === 'Pending').length;
+        const completed = bookings.filter(b => b.status === 'Completed').length;
+        
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statPending').textContent = pending;
+        document.getElementById('statCompleted').textContent = completed;
+        document.getElementById('statActive').textContent = pending;
+      }
+
+      function renderAnalytics(bookings) {
+        const categoriesContainer = document.getElementById('chartCategories');
+        const timeSlotsContainer = document.getElementById('chartTimeSlots');
+
+        categoriesContainer.innerHTML = '';
+        timeSlotsContainer.innerHTML = '';
+
+        if (bookings.length === 0) {
+          categoriesContainer.innerHTML = '<p class="text-muted-foreground text-sm">No data available yet</p>';
+          timeSlotsContainer.innerHTML = '<p class="text-muted-foreground text-sm">No data available yet</p>';
+          return;
+        }
+
+        // 1. Group Bookings by Category
+        const categoryCounts = {
+          "A/C Service": 0,
+          "A/C Sales & Installation": 0,
+          "Fridge Service": 0,
+          "Fridge Sales": 0,
+          "Washing Machine Service": 0,
+          "Washing Machine Sales": 0,
+          "Other": 0
+        };
+
+        bookings.forEach(b => {
+          if (categoryCounts[b.serviceType] !== undefined) {
+            categoryCounts[b.serviceType]++;
+          } else {
+            categoryCounts["Other"]++;
+          }
+        });
+
+        // Find max category count for rendering percentages
+        const maxCatVal = Math.max(...Object.values(categoryCounts), 1);
+
+        for (const [cat, count] of Object.entries(categoryCounts)) {
+          const percent = (count / maxCatVal) * 100;
+          categoriesContainer.appendChild(createBarRow(cat, count, percent));
+        }
+
+        // 2. Group Bookings by Time Slots
+        const timeSlotCounts = {
+          "9:00 AM - 11:00 AM": 0,
+          "11:00 AM - 1:00 PM": 0,
+          "2:00 PM - 4:00 PM": 0,
+          "4:00 PM - 6:00 PM": 0,
+          "6:00 PM - 9:00 PM": 0,
+          "Not specified": 0
+        };
+
+        bookings.forEach(b => {
+          const slot = b.preferredTime || "Not specified";
+          if (timeSlotCounts[slot] !== undefined) {
+            timeSlotCounts[slot]++;
+          } else {
+            timeSlotCounts["Not specified"]++;
+          }
+        });
+
+        const maxSlotVal = Math.max(...Object.values(timeSlotCounts), 1);
+
+        for (const [slot, count] of Object.entries(timeSlotCounts)) {
+          const percent = (count / maxSlotVal) * 100;
+          timeSlotsContainer.appendChild(createBarRow(slot, count, percent));
+        }
+      }
+
+      function createBarRow(label, count, percent) {
+        const rowDiv = document.createElement('div');
+        rowDiv.classList.add('bar-row');
+
+        rowDiv.innerHTML = `
+          <div class="bar-label-row">
+            <span>${label}</span>
+            <span class="text-primary">${count} request${count !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="bar-bg">
+            <div class="bar-fill" style="width: ${percent}%;"></div>
+          </div>
+        `;
+        return rowDiv;
+      }
+
+      // Filter controls input triggers
+      const filterTableTrigger = () => {
+        const bookings = JSON.parse(localStorage.getItem('malar_bookings')) || [];
+        renderBookingsTable(bookings);
+      };
+
+      searchInput.addEventListener('input', filterTableTrigger);
+      filterService.addEventListener('change', filterTableTrigger);
+      filterStatus.addEventListener('change', filterTableTrigger);
+
+      function renderBookingsTable(bookings) {
+        bookingsTableBody.innerHTML = '';
+
+        const search = searchInput.value.toLowerCase().trim();
+        const categoryFilter = filterService.value;
+        const statusFilter = filterStatus.value;
+
+        // Apply filters
+        const filteredBookings = bookings.filter(b => {
+          // Search query check
+          const matchesSearch = 
+            b.customerName.toLowerCase().includes(search) ||
+            b.phoneNumber.includes(search) ||
+            b.address.toLowerCase().includes(search) ||
+            (b.message && b.message.toLowerCase().includes(search));
+
+          // Category check
+          const matchesCategory = (categoryFilter === 'ALL' || b.serviceType === categoryFilter);
+
+          // Status check
+          const matchesStatus = (statusFilter === 'ALL' || b.status === statusFilter);
+
+          return matchesSearch && matchesCategory && matchesStatus;
+        });
+
+        // Sort: pending first, then newest timestamp
+        filteredBookings.sort((x, y) => {
+          if (x.status === y.status) {
+            return new Date(y.timestamp) - new Date(x.timestamp);
+          }
+          return x.status === 'Pending' ? -1 : 1;
+        });
+
+        if (filteredBookings.length === 0) {
+          bookingsTableBody.innerHTML = `
+            <tr>
+              <td colspan="8">
+                <div class="empty-state">
+                  <i data-lucide="inbox" class="empty-state-icon"></i>
+                  <h4 class="empty-state-title">No Bookings Found</h4>
+                  <p class="text-sm">No scheduled requests match your current filters or search term.</p>
+                </div>
+              </td>
+            </tr>
+          `;
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+          return;
+        }
+
+        // Render rows
+        filteredBookings.forEach(b => {
+          const tr = document.createElement('tr');
+          
+          const bookingDate = b.preferredDate ? new Date(b.preferredDate).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) : "Not scheduled";
+          const bookingTime = b.preferredTime || "Anytime";
+          
+          tr.innerHTML = `
+            <td data-label="Customer">
+              <strong style="font-size:0.95rem; color:#0f172a;">${escapeHTML(b.customerName)}</strong>
+              <div class="text-muted-foreground text-xs" style="margin-top:0.15rem;">
+                Requested on: ${new Date(b.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </td>
+            <td data-label="Contact">
+              <div class="contact-cell">
+                <span style="font-weight:600; color:var(--primary-dark);">${escapeHTML(b.phoneNumber)}</span>
+                ${b.email ? `<span style="font-size:0.75rem; color:var(--muted-foreground);">${escapeHTML(b.email)}</span>` : ''}
+              </div>
+            </td>
+            <td data-label="Category">
+              <span class="service-type-badge">${b.serviceType}</span>
+            </td>
+            <td data-label="Preferred Slot">
+              <div style="font-weight:600;">${bookingDate}</div>
+              <div class="text-muted-foreground text-xs" style="margin-top:0.1rem;">${bookingTime}</div>
+            </td>
+            <td data-label="Address">
+              <div class="address-cell">${escapeHTML(b.address)}</div>
+            </td>
+            <td data-label="Message">
+              <div style="font-size:0.8rem; max-width:200px; color:var(--muted-foreground);">${escapeHTML(b.message || "-")}</div>
+            </td>
+            <td data-label="Status">
+              <span class="status-badge ${b.status.toLowerCase()}">${b.status}</span>
+            </td>
+            <td data-label="Actions">
+              <div class="row-actions">
+                <!-- Status Toggle -->
+                <button class="btn-action toggle" title="Mark as ${b.status === 'Pending' ? 'Completed' : 'Pending'}" onclick="toggleStatus('${b.id}')">
+                  <i data-lucide="${b.status === 'Pending' ? 'check' : 'rotate-ccw'}" style="width:0.95rem; height:0.95rem;"></i>
+                </button>
+                
+                <!-- Chat on WhatsApp -->
+                <button class="btn-action whatsapp" title="Chat on WhatsApp" onclick="contactWhatsApp('${b.id}')">
+                  <i data-lucide="message-square" style="width:0.95rem; height:0.95rem;"></i>
+                </button>
+                
+                <!-- Delete -->
+                <button class="btn-action delete" title="Delete Booking" onclick="deleteBooking('${b.id}')">
+                  <i data-lucide="trash" style="width:0.95rem; height:0.95rem;"></i>
+                </button>
+              </div>
+            </td>
+          `;
+          
+          bookingsTableBody.appendChild(tr);
+        });
+
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      }
+
+      // Safe HTML escaping helper
+      function escapeHTML(str) {
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      // Global window functions for table action button clicks
+      window.toggleStatus = (id) => {
+        const bookings = JSON.parse(localStorage.getItem('malar_bookings')) || [];
+        const index = bookings.findIndex(b => b.id === id);
+        
+        if (index !== -1) {
+          bookings[index].status = bookings[index].status === 'Pending' ? 'Completed' : 'Pending';
+          localStorage.setItem('malar_bookings', JSON.stringify(bookings));
+          loadBookings();
+        }
+      };
+
+      window.contactWhatsApp = (id) => {
+        const bookings = JSON.parse(localStorage.getItem('malar_bookings')) || [];
+        const booking = bookings.find(b => b.id === id);
+        
+        if (booking) {
+          const text = `Hello *${booking.customerName}*, I'm following up on your *${booking.serviceType}* request scheduled for *${booking.preferredDate || 'soon'}* (*${booking.preferredTime || 'Anytime'}*). Let's coordinate the doorstep service!`;
+          const encoded = encodeURIComponent(text);
+          // Redirect owner to contact the customer!
+          window.open(`https://wa.me/91${booking.phoneNumber}?text=${encoded}`, '_blank');
+        }
+      };
+
+      window.deleteBooking = (id) => {
+        if (confirm("Are you sure you want to delete this booking request? This action cannot be undone.")) {
+          const bookings = JSON.parse(localStorage.getItem('malar_bookings')) || [];
+          const filtered = bookings.filter(b => b.id !== id);
+          localStorage.setItem('malar_bookings', JSON.stringify(filtered));
+          loadBookings();
+        }
+      };
+
+      // Export bookings to CSV file
+      btnExport.addEventListener('click', () => {
+        const bookings = JSON.parse(localStorage.getItem('malar_bookings')) || [];
+        if (bookings.length === 0) {
+          alert("No bookings available to export.");
+          return;
+        }
+
+        // CSV Header
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Customer Name,Phone Number,Email,Service Category,Service Date,Time Slot,Address,Message,Status,Requested Timestamp\n";
+
+        // CSV Rows
+        bookings.forEach(b => {
+          const row = [
+            `"${b.customerName.replace(/"/g, '""')}"`,
+            `"${b.phoneNumber}"`,
+            `"${(b.email || '').replace(/"/g, '""')}"`,
+            `"${b.serviceType}"`,
+            `"${b.preferredDate || 'Not specified'}"`,
+            `"${b.preferredTime || 'Not specified'}"`,
+            `"${b.address.replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+            `"${(b.message || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+            `"${b.status}"`,
+            `"${b.timestamp}"`
+          ].join(",");
+          csvContent += row + "\n";
+        });
+
+        // Trigger Download
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `malar_bookings_export_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    });
+  </script>
+</body>
+</html>
