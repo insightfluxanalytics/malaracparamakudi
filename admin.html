@@ -1028,52 +1028,20 @@
           console.error("Local storage access restricted by browser security:", err);
         }
 
-        if (!bookings || bookings.length === 0) {
-          bookings = [
-            {
-              id: 'booking_mock_1',
-              customerName: 'Aravind Swamy',
-              phoneNumber: '9845123654',
-              email: 'aravind@gmail.com',
-              serviceType: 'A/C Service',
-              preferredDate: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
-              preferredTime: '11:00 AM - 1:00 PM',
-              address: 'No 12, Gandhi Street, Madurai',
-              message: 'AC is not cooling properly, needs gas refilling.',
-              status: 'Pending',
-              timestamp: new Date(Date.now() - 3600000).toISOString()
-            },
-            {
-              id: 'booking_mock_2',
-              customerName: 'Meena Kumari',
-              phoneNumber: '9443210987',
-              email: '',
-              serviceType: 'Fridge Service',
-              preferredDate: new Date(Date.now() + 172800000).toISOString().slice(0, 10),
-              preferredTime: '2:00 PM - 4:00 PM',
-              address: '56A, Anna Nagar, Trichy',
-              message: 'Double door fridge compressor making loud noise.',
-              status: 'Pending',
-              timestamp: new Date(Date.now() - 7200000).toISOString()
-            },
-            {
-              id: 'booking_mock_3',
-              customerName: 'Karthik Raja',
-              phoneNumber: '8608672282',
-              email: 'karthik@yahoo.com',
-              serviceType: 'Washing Machine Service',
-              preferredDate: new Date().toISOString().slice(0, 10),
-              preferredTime: '9:00 AM - 11:00 AM',
-              address: 'Flat 4B, Balaji Apartments, Madurai',
-              message: 'Top load drum is vibrating heavily during spin cycle.',
-              status: 'Completed',
-              timestamp: new Date(Date.now() - 86400000).toISOString()
-            }
-          ];
+        if (!bookings) {
+          bookings = [];
+        }
+
+        // Permanently filter out any pre-existing mock/fallback data to ensure only real-time info remains
+        const originalLength = bookings.length;
+        bookings = bookings.filter(b => b && b.id && !b.id.startsWith('booking_mock_'));
+        
+        // Save the cleaned real-time list back to localStorage if changes were made
+        if (originalLength !== bookings.length || !localStorage.getItem('malar_bookings')) {
           try {
             localStorage.setItem('malar_bookings', JSON.stringify(bookings));
           } catch (err) {
-            console.warn("Could not save fallback mock bookings to localStorage:", err);
+            console.warn("Could not save cleaned real-time bookings to localStorage:", err);
           }
         }
         
