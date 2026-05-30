@@ -1,0 +1,15 @@
+[
+  {
+    "id": "booking_1780119100458_5aw6ku0wk",
+    "customerName": "Jegan",
+    "phoneNumber": "9750106378",
+    "email": "",
+    "serviceType": "A/C Sales & Installation",
+    "preferredDate": "2026-05-30",
+    "preferredTime": "4:00 PM - 6:00 PM",
+    "address": "Santhaikadai street",
+    "message": "",
+    "status": "Completed",
+    "timestamp": "2026-05-30T05:31:40.458Z"
+  }
+]
