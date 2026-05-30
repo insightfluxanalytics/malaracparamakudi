@@ -323,8 +323,26 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Error saving booking locally:", err);
       }
 
+      // Dynamic Sync Server URL Auto-Detection Helper
+      function getServerUrl() {
+        const savedUrl = localStorage.getItem('malar_sync_server_url');
+        if (savedUrl) {
+          return savedUrl.replace(/\/$/, "");
+        }
+        
+        // Auto-detect URL
+        if (window.location.port === '8080') {
+          return window.location.origin;
+        } else if (window.location.hostname) {
+          return `http://${window.location.hostname}:8080`;
+        } else {
+          return `http://localhost:8080`;
+        }
+      }
+
       // Send to central Sync Server in background
-      fetch('/api/bookings', {
+      const serverUrl = getServerUrl();
+      fetch(`${serverUrl}/api/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
