@@ -7,6 +7,118 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   }
 
+  // --- Leaflet.js GPS Map Integration ---
+  let map, marker;
+  const defaultLat = 9.9252;
+  const defaultLng = 78.1198; // Madurai central
+
+  const addressMapContainer = document.getElementById('addressMap');
+  const addressTextarea = document.getElementById('address');
+  const coordsDisplay = document.getElementById('coordsDisplay');
+  const latInput = document.getElementById('latitude');
+  const lngInput = document.getElementById('longitude');
+  const detectLocationBtn = document.getElementById('detectLocationBtn');
+
+  if (addressMapContainer && addressTextarea) {
+    try {
+      // 1. Initialize Map centered on Madurai
+      map = L.map('addressMap').setView([defaultLat, defaultLng], 13);
+
+      // 2. Add OpenStreetMap Tile Layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // 3. Add Custom Draggable Marker
+      marker = L.marker([defaultLat, defaultLng], {
+        draggable: true
+      }).addTo(map);
+
+      // Set initial values without forcing geocode to prevent blank page load slow
+      updateCoordinates(defaultLat, defaultLng, false);
+
+      // 4. Marker Drag-End Listener
+      marker.on('dragend', () => {
+        const position = marker.getLatLng();
+        updateCoordinates(position.lat, position.lng, true);
+      });
+
+      // 5. Map Click Listener
+      map.on('click', (e) => {
+        marker.setLatLng(e.latlng);
+        updateCoordinates(e.latlng.lat, e.latlng.lng, true);
+      });
+
+      // 6. Detect Current Location Button Listener
+      if (detectLocationBtn) {
+        detectLocationBtn.addEventListener('click', () => {
+          if (navigator.geolocation) {
+            detectLocationBtn.disabled = true;
+            const originalText = detectLocationBtn.innerHTML;
+            detectLocationBtn.innerHTML = `<span>⏳ Locating...</span>`;
+            
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                
+                // Move map and marker to current location
+                map.setView([lat, lng], 16);
+                marker.setLatLng([lat, lng]);
+                
+                updateCoordinates(lat, lng, true);
+                
+                detectLocationBtn.disabled = false;
+                detectLocationBtn.innerHTML = originalText;
+              },
+              (error) => {
+                console.error("Geolocation error:", error);
+                alert("Could not detect your automatic GPS location. Please drag the pin on the map to set your address manually!");
+                detectLocationBtn.disabled = false;
+                detectLocationBtn.innerHTML = originalText;
+              },
+              { enableHighAccuracy: true, timeout: 8000 }
+            );
+          } else {
+            alert("Geolocation is not supported by your browser. Please drag the pin on the map manually!");
+          }
+        });
+      }
+    } catch (err) {
+      console.error("Error loading Leaflet map:", err);
+    }
+  }
+
+  // Helper to reverse geocode and update coordinates fields
+  function updateCoordinates(lat, lng, shouldGeocode) {
+    if (latInput) latInput.value = lat.toFixed(6);
+    if (lngInput) lngInput.value = lng.toFixed(6);
+    
+    if (coordsDisplay) {
+      coordsDisplay.textContent = `GPS: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    }
+
+    if (shouldGeocode && addressTextarea) {
+      const originalPlaceholder = addressTextarea.placeholder;
+      addressTextarea.value = "Fetching address for pinned location...";
+      
+      // Fetch reverse geocoding from free Nominatim API
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.display_name) {
+            addressTextarea.value = data.display_name;
+            addressTextarea.placeholder = originalPlaceholder;
+          }
+        })
+        .catch(err => {
+          console.warn("Reverse geocoding fetch failed:", err);
+          addressTextarea.value = "";
+          addressTextarea.placeholder = originalPlaceholder;
+        });
+    }
+  }
+
   // 2. Set Current Year in Footer
   const yearSpan = document.getElementById('currentYear');
   if (yearSpan) {
@@ -145,6 +257,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const preferredTime = document.getElementById('preferredTime').value;
       const address = document.getElementById('address').value.trim();
       const message = document.getElementById('message').value.trim();
+      
+      // Capturing interactive map GPS coordinates
+      const latitude = document.getElementById('latitude').value || "9.9252";
+      const longitude = document.getElementById('longitude').value || "78.1198";
+      const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
 
       // Form validation
       if (!customerName || customerName.length > 100) {
@@ -176,30 +293,46 @@ document.addEventListener('DOMContentLoaded', () => {
 ⏰ *Preferred Time:* ${preferredTime || "Not specified"}
 
 📍 *Address:* ${address}
+🗺️ *Doorstep GPS Route:* ${googleMapsLink}
 
 💬 *Message:* ${message || "No additional message"}`;
+
+      const newBooking = {
+        id: 'booking_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        customerName,
+        phoneNumber,
+        email,
+        serviceType,
+        preferredDate,
+        preferredTime,
+        address,
+        message,
+        latitude,
+        longitude,
+        googleMapsLink,
+        status: 'Pending',
+        timestamp: new Date().toISOString()
+      };
 
       // Save to localStorage for Admin Owner Portal
       try {
         const bookings = JSON.parse(localStorage.getItem('malar_bookings')) || [];
-        const newBooking = {
-          id: 'booking_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
-          customerName,
-          phoneNumber,
-          email,
-          serviceType,
-          preferredDate,
-          preferredTime,
-          address,
-          message,
-          status: 'Pending',
-          timestamp: new Date().toISOString()
-        };
         bookings.push(newBooking);
         localStorage.setItem('malar_bookings', JSON.stringify(bookings));
       } catch (err) {
         console.error("Error saving booking locally:", err);
       }
+
+      // Send to central Sync Server in background
+      fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newBooking)
+      }).catch(err => {
+        console.warn("Sync server offline. Booking saved locally in browser.", err);
+      });
 
       // Build and open WhatsApp API link synchronously (to bypass popup blockers)
       const encodedMsg = encodeURIComponent(formattedMessage);
