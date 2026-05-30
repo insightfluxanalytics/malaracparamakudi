@@ -27,6 +27,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
+  <!-- Leaflet.js Map CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -372,9 +375,26 @@
             </div>
 
             <!-- Address -->
-            <div class="form-group">
-              <label for="address" class="form-label">Service Address *</label>
-              <textarea id="address" name="address" class="form-textarea" rows="3" placeholder="Enter your full doorstep service address" required maxlength="500"></textarea>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+                <label for="address" class="form-label" style="margin-bottom:0;">Service Address *</label>
+                <button type="button" id="detectLocationBtn" class="map-action-btn">
+                  <i data-lucide="map-pin" style="width:0.85rem; height:0.85rem; display:inline-block; vertical-align:middle; margin-right:0.25rem;"></i>
+                  <span style="vertical-align:middle;">Detect My Location</span>
+                </button>
+              </div>
+              <textarea id="address" name="address" class="form-textarea" rows="3" placeholder="Enter your full address (or use the map below to pin and auto-fill)..." required maxlength="500"></textarea>
+              
+              <!-- Interactive Map Pinning Container -->
+              <div class="map-widget-container" style="margin-top:0.75rem;">
+                <div style="font-size:0.75rem; font-weight:600; color:var(--muted-foreground); margin-bottom:0.35rem; display:flex; justify-content:space-between; align-items:center;">
+                  <span>📍 DRAG PIN OR CLICK MAP TO REFINE LOCATION</span>
+                  <span id="coordsDisplay" style="font-family:monospace; color:var(--primary); font-weight:700;">Madurai, Tamil Nadu</span>
+                </div>
+                <div id="addressMap" class="booking-map-canvas"></div>
+                <input type="hidden" id="latitude" name="latitude" />
+                <input type="hidden" id="longitude" name="longitude" />
+              </div>
             </div>
 
             <!-- Message -->
@@ -578,6 +598,8 @@
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Leaflet Map JS CDN -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <!-- App JS Code -->
   <script src="app.js"></script>
 </body>
