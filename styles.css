@@ -311,40 +311,317 @@ input, select, textarea {
   overflow: hidden;
 }
 
+/* Video Background Wrapper (Hardware-Accelerated HTML5 video) */
+.hero-video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0; /* Behind shapes (z-index: 1) and text content (z-index: 10) */
+}
+
+.hero-video-wrapper video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85; /* Highly visible, clean and vibrant video! */
+  filter: contrast(1.05) brightness(0.9) saturate(1.05); /* Natural, clear colors */
+  will-change: transform;
+}
+
+.hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  /* Symmetrical radial vignette: provides subtle center darkening to protect readability, and transitions to deep ambient borders */
+  background: radial-gradient(circle, rgba(10, 25, 47, 0.45) 0%, rgba(10, 25, 47, 0.55) 50%, rgba(10, 25, 47, 0.8) 100%);
+  z-index: 1;
+}
+
 .hero-bg-shapes {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.08;
+  overflow: hidden;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  z-index: 1; /* Sits behind content (z-index: 10) but above backdrop */
 }
 
-.hero-shape-icon {
+/* 3D Shapes Styling */
+.shape-3d {
   position: absolute;
-  color: var(--primary-foreground);
+  pointer-events: none;
+  transform-style: preserve-3d;
+  transition: transform 0.2s ease-out; /* Smooth JS parallax transition */
+  will-change: transform;
 }
 
-.hero-shape-icon.icon-1 {
+/* 1. Large 3D Glass Ring (Torus Mockup) behind the Company Logo */
+.shape-3d-ring {
+  top: 5%;
+  right: -50px;
+  width: 250px;
+  height: 250px;
+  border-radius: var(--radius-full);
+  border: 18px solid rgba(255, 255, 255, 0.04);
+  background: radial-gradient(circle, transparent 40%, rgba(14, 165, 233, 0.04) 70%, rgba(255,255,255,0.01) 100%);
+  box-shadow: 0 0 40px rgba(14, 165, 233, 0.08), inset 0 0 30px rgba(255,255,255,0.03);
+  transform: rotateX(30deg) rotateY(-20deg) rotateZ(0deg);
+  animation: spinRing3D 45s linear infinite;
+  filter: blur(1px);
+}
+
+@media (min-width: 768px) {
+  .shape-3d-ring {
+    top: 5%;
+    right: 5%;
+    width: 380px;
+    height: 380px;
+    border-width: 28px;
+    box-shadow: 0 0 60px rgba(14, 165, 233, 0.12), inset 0 0 40px rgba(255,255,255,0.05);
+  }
+}
+
+/* 2. Detailed 3D Condenser Turbine/Fan behind Hero Text */
+.shape-3d-turbine {
   top: 10%;
+  left: -40px;
+  width: 150px;
+  height: 150px;
+  transform: rotateX(22deg) rotateY(18deg) rotateZ(0deg);
+  animation: spinTurbine3D 20s linear infinite;
+  opacity: 0.22;
+  filter: blur(0.5px);
+}
+
+@media (min-width: 768px) {
+  .shape-3d-turbine {
+    top: 8%;
+    left: 6%;
+    width: 220px;
+    height: 220px;
+  }
+}
+
+.turbine-hub {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(14, 165, 233, 0.15) 75%);
+  border: 4px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--radius-full);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateZ(10px);
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.3), inset 0 0 8px rgba(255,255,255,0.3);
+}
+
+@media (min-width: 768px) {
+  .turbine-hub {
+    width: 60px;
+    height: 60px;
+    border-width: 6px;
+  }
+}
+
+.turbine-blades {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.blade {
+  position: absolute;
+  width: 45px;
+  height: 20px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.28) 0%, rgba(34, 211, 238, 0.08) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  top: 50%;
+  left: 50%;
+  margin-top: -10px;
+  border-radius: 4px 50% 50% 4px;
+  transform-origin: left center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 768px) {
+  .blade {
+    width: 70px;
+    height: 28px;
+    margin-top: -14px;
+  }
+}
+
+/* Arrange 6 turbine blades at 60 degree intervals with custom pitch angle for 3D depth */
+.blade.b-1 { transform: translate(0, -50%) rotate(0deg) rotateY(25deg); }
+.blade.b-2 { transform: translate(0, -50%) rotate(60deg) rotateY(25deg); }
+.blade.b-3 { transform: translate(0, -50%) rotate(120deg) rotateY(25deg); }
+.blade.b-4 { transform: translate(0, -50%) rotate(180deg) rotateY(25deg); }
+.blade.b-5 { transform: translate(0, -50%) rotate(240deg) rotateY(25deg); }
+.blade.b-6 { transform: translate(0, -50%) rotate(300deg) rotateY(25deg); }
+
+/* 4. Dynamic Flowing 3D Airflow Wind Waves */
+.airflow-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.28;
+}
+
+.airflow-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.air-stream {
+  fill: none;
+  stroke: rgba(14, 165, 233, 0.4);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 20 200;
+  animation: airflowDash 6s linear infinite;
+}
+
+.air-stream.stream-1 {
+  stroke: rgba(34, 211, 238, 0.45);
+  stroke-width: 3.5;
+  animation-duration: 5s;
+}
+
+.air-stream.stream-2 {
+  stroke: rgba(14, 165, 233, 0.35);
+  stroke-width: 2.5;
+  animation-duration: 7s;
+  animation-delay: -2s;
+}
+
+.air-stream.stream-3 {
+  stroke: rgba(56, 189, 248, 0.4);
+  stroke-width: 3.0;
+  animation-duration: 6s;
+  animation-delay: -4s;
+}
+
+@keyframes airflowDash {
+  0% {
+    stroke-dashoffset: 400;
+  }
+  100% {
+    stroke-dashoffset: -400;
+  }
+}
+
+/* 5. Floating Glowing Icy Particles */
+.ice-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.ice-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(34, 211, 238, 0.4) 60%, transparent 100%);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+  opacity: 0;
+  animation: iceFloatSway 10s ease-in-out infinite;
+}
+
+@media (min-width: 768px) {
+  .ice-particle {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.ice-particle.p-1 { top: 40%; left: 15%; animation-duration: 12s; animation-delay: 0s; }
+.ice-particle.p-2 { top: 20%; left: 45%; animation-duration: 9s; animation-delay: -2s; }
+.ice-particle.p-3 { top: 60%; left: 70%; animation-duration: 11s; animation-delay: -4s; }
+.ice-particle.p-4 { top: 75%; left: 30%; animation-duration: 13s; animation-delay: -1s; }
+.ice-particle.p-5 { top: 10%; left: 85%; animation-duration: 8s; animation-delay: -3s; }
+.ice-particle.p-6 { top: 50%; left: 92%; animation-duration: 10s; animation-delay: -5s; }
+
+@keyframes iceFloatSway {
+  0% {
+    transform: translateY(20px) translateX(0) scale(0.8);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-80px) translateX(15px) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* 3. Intersecting 3D Ice Crystal (representing AC cooling) */
+.shape-3d-crystal {
+  bottom: 8%;
   left: 5%;
-  width: 5rem;
-  height: 5rem;
-  transform: rotate(-15deg);
+  width: 90px;
+  height: 90px;
+  transform: rotateX(35deg) rotateY(25deg) rotateZ(0deg);
+  animation: spinCrystal3D 16s ease-in-out infinite alternate, floatCrystal3D 4s ease-in-out infinite;
+  opacity: 0.16;
+  filter: blur(0.5px);
 }
 
-.hero-shape-icon.icon-2 {
-  top: 40%;
-  right: 10%;
-  width: 4rem;
-  height: 4rem;
-  transform: rotate(45deg);
+@media (min-width: 768px) {
+  .shape-3d-crystal {
+    bottom: 12%;
+    left: 28%;
+    width: 130px;
+    height: 130px;
+  }
 }
 
-.hero-shape-icon.icon-3 {
-  bottom: 15%;
-  left: 20%;
-  width: 3.5rem;
-  height: 3.5rem;
-  transform: rotate(80deg);
+.crystal-plane {
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid rgba(22, 220, 255, 0.45);
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.18) 0%, rgba(2, 132, 199, 0.05) 100%);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.15);
+  transform-style: preserve-3d;
+}
+
+.crystal-plane.p-horizontal { transform: rotateY(0deg) translateZ(0); }
+.crystal-plane.p-vertical   { transform: rotateY(90deg) translateZ(0); }
+.crystal-plane.p-diagonal   { transform: rotateX(90deg) translateZ(0); }
+
+/* Custom 3D Background Keyframes */
+@keyframes spinRing3D {
+  0% { transform: rotateX(30deg) rotateY(-20deg) rotateZ(0deg) translateY(var(--scroll-y, 0px)); }
+  100% { transform: rotateX(30deg) rotateY(-20deg) rotateZ(360deg) translateY(var(--scroll-y, 0px)); }
+}
+
+@keyframes spinTurbine3D {
+  0% { transform: rotateX(22deg) rotateY(18deg) rotateZ(0deg) translateY(var(--scroll-y, 0px)); }
+  100% { transform: rotateX(22deg) rotateY(18deg) rotateZ(-360deg) translateY(var(--scroll-y, 0px)); }
+}
+
+@keyframes spinCrystal3D {
+  0% { transform: rotateX(35deg) rotateY(25deg) rotateZ(0deg) translateY(var(--scroll-y, 0px)); }
+  100% { transform: rotateX(-25deg) rotateY(55deg) rotateZ(180deg) translateY(var(--scroll-y, 0px)); }
+}
+
+@keyframes floatCrystal3D {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: -12px; }
 }
 
 .hero-container {
@@ -358,7 +635,9 @@ input, select, textarea {
 
 @media (min-width: 992px) {
   .hero-container {
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: 1fr;
+    max-width: 54rem; /* Keeps content perfectly proportioned in the center */
+    margin: 0 auto;
   }
 }
 
@@ -368,7 +647,7 @@ input, select, textarea {
 
 @media (min-width: 992px) {
   .hero-content {
-    text-align: left;
+    text-align: center;
   }
 }
 
@@ -415,7 +694,6 @@ input, select, textarea {
 
 @media (min-width: 992px) {
   .hero-desc {
-    margin-left: 0;
     font-size: 1.15rem;
   }
 }
@@ -437,7 +715,7 @@ input, select, textarea {
 
 @media (min-width: 992px) {
   .hero-ctas {
-    justify-content: flex-start;
+    justify-content: center;
   }
 }
 
@@ -501,7 +779,7 @@ input, select, textarea {
 
 @media (min-width: 992px) {
   .hero-bullets {
-    justify-content: flex-start;
+    justify-content: center;
   }
 }
 
