@@ -323,34 +323,30 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Error saving booking locally:", err);
       }
 
-      // Dynamic Sync Server URL Auto-Detection Helper
-      function getServerUrl() {
-        const savedUrl = localStorage.getItem('malar_sync_server_url');
-        if (savedUrl) {
-          return savedUrl.replace(/\/$/, "");
-        }
-        
-        // Auto-detect URL
-        if (window.location.port === '8080') {
-          return window.location.origin;
-        } else if (window.location.hostname) {
-          return `http://${window.location.hostname}:8080`;
-        } else {
-          return `http://localhost:8080`;
-        }
-      }
-
-      // Send to central Sync Server in background
-      const serverUrl = getServerUrl();
-      fetch(`${serverUrl}/api/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newBooking)
-      }).catch(err => {
-        console.warn("Sync server offline. Booking saved locally in browser.", err);
-      });
+      // Send to central Cloud Database in background (highly persistent and zero-config)
+      const cloudDbUrl = 'https://jsonbin-zeta.vercel.app/api/bins/2iDz1QCCEL';
+      fetch(cloudDbUrl)
+        .then(res => res.json())
+        .then(resData => {
+          const currentBookings = Array.isArray(resData.data) ? resData.data : [];
+          // Make sure booking isn't already added
+          if (!currentBookings.some(b => b.id === newBooking.id)) {
+            currentBookings.push(newBooking);
+          }
+          return fetch(cloudDbUrl, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(currentBookings)
+          });
+        })
+        .then(() => {
+          console.log("Booking successfully synced to Admin Cloud Database.");
+        })
+        .catch(err => {
+          console.warn("Cloud Database offline. Booking saved locally in browser.", err);
+        });
 
       // Build and open WhatsApp API link synchronously (to bypass popup blockers)
       const encodedMsg = encodeURIComponent(formattedMessage);
