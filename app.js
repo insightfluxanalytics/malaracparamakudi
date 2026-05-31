@@ -324,7 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Send to central Cloud Database in background (highly persistent and zero-config)
-      const cloudDbUrl = 'https://jsonbin-zeta.vercel.app/api/bins/2iDz1QCCEL';
+      const cloudDbUrl = (window.location.hostname === '' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'https://malaracparamakudi.vercel.app/api/bookings'
+        : '/api/bookings';
       fetch(cloudDbUrl)
         .then(res => res.json())
         .then(resData => {
