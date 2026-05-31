@@ -546,4 +546,24 @@ document.addEventListener('DOMContentLoaded', () => {
     For direct details on this custom query, please dial <a href="tel:9750106378" style="color:var(--primary-dark); font-weight:700; text-decoration:underline;">9750106378</a> to speak with <strong>B. Rajakumar</strong>, or send us a message on <a href="https://wa.me/919750106378" target="_blank" style="color:var(--whatsapp-hover); font-weight:700; text-decoration:underline;">WhatsApp</a>.`;
   }
 
+  // --- 9. Premium 3D Background Graphics Parallax Scrolling Effect ---
+  const heroSection = document.getElementById('home');
+  const bgRing = document.getElementById('bg3dRing');
+  const bgTurbine = document.getElementById('bg3dTurbine');
+  const bgCrystal = document.getElementById('bg3dCrystal');
+
+  if (heroSection && (bgRing || bgTurbine || bgCrystal)) {
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const heroHeight = heroSection.clientHeight || 600;
+
+      // Only calculate transforms when the hero section is visible in/near the viewport
+      if (scrollY <= heroHeight + 100) {
+        if (bgRing) bgRing.style.setProperty('--scroll-y', `${scrollY * -0.15}px`);
+        if (bgTurbine) bgTurbine.style.setProperty('--scroll-y', `${scrollY * -0.25}px`);
+        if (bgCrystal) bgCrystal.style.setProperty('--scroll-y', `${scrollY * -0.35}px`);
+      }
+    }, { passive: true });
+  }
+
 });
