@@ -86,10 +86,56 @@
   <main>
     <!-- Hero Section -->
     <section id="home" class="hero-section">
+      <!-- Premium Native Looping Video Background (100% Offline Compatible) -->
+      <div class="hero-video-wrapper">
+        <video autoplay muted loop playsinline poster="assets/logo.jpg">
+          <source src="assets/hero-bg.mp4" type="video/mp4">
+        </video>
+        <div class="hero-video-overlay"></div>
+      </div>
+
       <div class="hero-bg-shapes">
-        <i data-lucide="wrench" class="hero-shape-icon icon-1"></i>
-        <i data-lucide="wrench" class="hero-shape-icon icon-2"></i>
-        <i data-lucide="wrench" class="hero-shape-icon icon-3"></i>
+        <!-- 1. Large Glass 3D Ring behind Logo -->
+        <div class="shape-3d shape-3d-ring" id="bg3dRing"></div>
+        
+        <!-- 2. Stylized 3D Condenser Turbine/Fan (Powerhouse of Cooling) -->
+        <div class="shape-3d shape-3d-turbine" id="bg3dTurbine">
+          <div class="turbine-hub"></div>
+          <div class="turbine-blades">
+            <div class="blade b-1"></div>
+            <div class="blade b-2"></div>
+            <div class="blade b-3"></div>
+            <div class="blade b-4"></div>
+            <div class="blade b-5"></div>
+            <div class="blade b-6"></div>
+          </div>
+        </div>
+        
+        <!-- 3. Intersecting 3D Ice Crystal -->
+        <div class="shape-3d shape-3d-crystal" id="bg3dCrystal">
+          <div class="crystal-plane p-horizontal"></div>
+          <div class="crystal-plane p-vertical"></div>
+          <div class="crystal-plane p-diagonal"></div>
+        </div>
+
+        <!-- 4. Dynamic Flowing 3D Airflow Wind Waves -->
+        <div class="airflow-container">
+          <svg class="airflow-svg" viewBox="0 0 1440 600" preserveAspectRatio="none">
+            <path class="air-stream stream-1" d="M -100 180 C 350 80, 700 280, 1600 130" />
+            <path class="air-stream stream-2" d="M -100 240 C 450 340, 850 120, 1600 280" />
+            <path class="air-stream stream-3" d="M -100 300 C 250 420, 750 220, 1600 380" />
+          </svg>
+        </div>
+
+        <!-- 5. Floating Glowing Icy Particles -->
+        <div class="ice-particles">
+          <div class="ice-particle p-1"></div>
+          <div class="ice-particle p-2"></div>
+          <div class="ice-particle p-3"></div>
+          <div class="ice-particle p-4"></div>
+          <div class="ice-particle p-5"></div>
+          <div class="ice-particle p-6"></div>
+        </div>
       </div>
 
       <div class="container hero-container">
@@ -130,13 +176,7 @@
           </div>
         </div>
 
-        <!-- Hero Graphic -->
-        <div class="hero-graphic">
-          <div class="hero-image-wrapper">
-            <div class="hero-image-glow"></div>
-            <img src="assets/logo.jpg" alt="Malar A/C Mechanic & Service" class="hero-image" />
-          </div>
-        </div>
+
       </div>
 
       <!-- Owner Info Row -->
