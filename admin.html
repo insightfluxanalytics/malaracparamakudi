@@ -1124,7 +1124,9 @@
       }
 
       // Central Cloud Database Endpoint
-      const cloudDbUrl = 'https://jsonbin-zeta.vercel.app/api/bins/2iDz1QCCEL';
+      const cloudDbUrl = (window.location.hostname === '' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'https://malaracparamakudi.vercel.app/api/bookings'
+        : '/api/bookings';
 
       // Helper function to sync updated list back to the shared cloud database
       async function syncWithServer(updatedBookings) {
